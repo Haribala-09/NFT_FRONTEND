@@ -1,0 +1,101 @@
+.nft-animation-container {
+  display: flex;
+  width: 93.5%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #000000;
+  position: fixed;
+  right: 0;
+  top: 0;
+  overflow: hidden;
+}
+
+.nft-token {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  opacity: 0.7;
+  border-radius: 50%;
+  animation: moveNFT 10s linear infinite;
+}
+
+@keyframes moveNFT {
+  from {
+      transform: translateY(-100px) rotate(0deg);
+  }
+  to {
+      transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+.hero-section {
+  width: 60%;
+  color: #ffffff;
+  text-align: center;
+  margin-top: 80px;
+  margin-bottom: 80px;
+  position: relative;
+  z-index: 2;
+}
+
+.trending-wrapper {
+  width: 70%;
+  
+  padding: 20px;
+  margin-top: auto;
+  margin-bottom: 20%;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+.trending-title {
+  font-size: 24px;
+  color: #ddd;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+
+.trending-list
+{
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+.trending-item {
+  display: flex;
+  color: #ffffff;
+  justify-content: space-between;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  transition: background 0.3s ease-in-out;
+}
+
+.trending-item:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.rank {
+  font-weight: bold;
+}
+
+.nft-name {
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.author {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.price {
+  font-weight: bold;
+  color:green;
+}

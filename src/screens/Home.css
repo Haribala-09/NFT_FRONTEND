@@ -1,0 +1,6 @@
+.main {
+    display: flex;
+    flex-direction: row;
+    background: linear-gradient(135deg,#acdffe, #000000);
+
+}

@@ -1,0 +1,15 @@
+.explore {
+  width: 90%;
+  height: 100%;
+  margin-left: 20px;
+}
+
+.explore-card {
+  position: fixed;
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 20px; 
+  max-height: 90vh; 
+  overflow-y: auto; 
+  margin: 10px 0px 5px 100px;
+}
