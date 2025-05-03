@@ -2,56 +2,111 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background-color: #f2f2f2;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    padding: 20px;
   }
   
   .logincontainer {
-    padding: 40px 45px 40px 30px;
+    padding: 40px;
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    width: 100%;
+    max-width: 400px;
     text-align: center;
   }
   
   .logincontainer h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
+    margin-bottom: 30px;
+    font-size: 28px;
     font-weight: 700;
+    color: #333;
   }
   
   .logincontainer input {
     width: 100%;
     margin-bottom: 15px;
-    padding: 10px 12px;
-    border: 1px solid #ccc;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 16px;
     outline: none;
-    transition: border-color 0.3s;
+    transition: all 0.3s ease;
   }
   
   .logincontainer input:focus {
-    border-color: #0066cc;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
   }
   
-  .logincontainer button {
-    width: 325px;
-    padding: 10px 12px ;
-    background-color: #0066cc;
+  .logincontainer button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 6px;
     font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    transition: background-color 0.3s ease;
   }
   
-  .logincontainer button:hover {
-    background-color: #005bb5;
+  .logincontainer button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  .logincontainer button[type="submit"]:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-align: left;
+  }
+  
+  .toggle-form {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+  }
+  
+  .toggle-button {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.3s ease;
+  }
+  
+  .toggle-button:hover {
+    color: #0056b3;
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 480px) {
+    .logincontainer {
+      padding: 30px 20px;
+    }
+    
+    .logincontainer h2 {
+      font-size: 24px;
+    }
+    
+    .logincontainer input {
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+    
+    .logincontainer button[type="submit"] {
+      padding: 10px;
+      font-size: 14px;
+    }
   }
   
