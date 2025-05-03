@@ -3,68 +3,89 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, database } from '../firebase'; // Correct import of 'database' from firebase.jsx
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { ref, set } from 'firebase/database'; // Realtime Database functions
+import { ref, set, get } from 'firebase/database'; // Realtime Database functions
 import './Login.css';
 
-function Login({ onLogin }) {
+function Login() {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     location: '',
     password: '',
   });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+
     const { username, email, location, password } = formData;
 
     if (!username || !email || !location || !password) {
-      alert('Please fill in all fields');
+      setError('Please fill in all fields');
+      setLoading(false);
       return;
     }
 
     try {
-      // First attempt to sign up user
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
-      // If new user is created, save to the Realtime Database
-      await set(ref(database, 'users/' + userCredential.user.uid), {
-        username,
-        email,
-        location,
-      });
-
-      alert('User signed up successfully!');
-      onLogin(formData); // Update parent component's state
-      navigate('/profile'); // Navigate to profile page after successful sign-up
-
-    } catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
-        // If email is already in use, attempt login
-        try {
-          await signInWithEmailAndPassword(auth, email, password);
-          alert('Login successful!');
-          onLogin(formData); // Update parent component's state
-          navigate('/profile'); // Navigate to profile page
-        } catch (loginError) {
-          // If login fails, show appropriate error message
-          if (loginError.code === 'auth/invalid-credential') {
-            alert('Invalid credentials. Please try again.');
-          } else {
-            alert('Login failed: ' + loginError.message);
-          }
+      // First try to sign in
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const userRef = ref(database, `users/${userCredential.user.uid}`);
+        const snapshot = await get(userRef);
+        
+        if (!snapshot.exists()) {
+          // If user exists in auth but not in database, create their profile
+          await set(userRef, {
+            username,
+            email,
+            location,
+            createdAt: Date.now()
+          });
         }
-      } else {
-        // If there's another error during sign-up
-        alert('Error during sign-up: ' + error.message);
+        
+        navigate('/explore');
+        return;
+      } catch (loginError) {
+        // If sign in fails with invalid credential, try to create new account
+        if (loginError.code === 'auth/invalid-credential') {
+          // Try to create new account
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          
+          // Save user data to Realtime Database
+          await set(ref(database, `users/${userCredential.user.uid}`), {
+            username,
+            email,
+            location,
+            createdAt: Date.now()
+          });
+
+          navigate('/explore');
+          return;
+        }
+        throw loginError;
       }
+    } catch (error) {
+      console.error('Auth error:', error);
+      if (error.code === 'auth/email-already-in-use') {
+        setError('This email is already registered. Please try logging in.');
+      } else if (error.code === 'auth/invalid-credential') {
+        setError('Invalid email or password');
+      } else {
+        setError(error.message);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,7 +126,10 @@ function Login({ onLogin }) {
             onChange={handleChange}
             required
           />
-          <button type="submit">LOGIN</button>
+          {error && <div className="error-message">{error}</div>}
+          <button type="submit" disabled={loading}>
+            {loading ? 'Processing...' : 'LOGIN'}
+          </button>
         </form>
       </div>
     </div>
