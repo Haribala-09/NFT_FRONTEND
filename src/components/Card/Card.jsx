@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { auth, database } from '../../firebase';
-import { ref, set, get } from 'firebase/database';
+import { ref, set } from 'firebase/database';
 import './Card.css';
 
-const Card = ({ id, cardname, cardpara, cardcost, cardpic, ipfsHash }) => {
+const Card = ({ id, cardname, cardpara, cardcost, cardpic, ipfsHash, onPurchaseSuccess }) => {
   const [buying, setBuying] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -19,46 +19,44 @@ const Card = ({ id, cardname, cardpara, cardcost, cardpic, ipfsHash }) => {
     setSuccess('');
 
     try {
-      // Make HTTP request with image ID
-      const response = await fetch('http://localhost:3000/purchase', {
+      // Fire-and-forget request (don't wait for or parse response)
+      fetch('http://192.168.228.202:8200/purchase', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          imageId: id
+          type: "txn",
+          data: {
+            who: "yuvaraji",
+            img_id: id
+          }
         })
       });
 
-      if (!response.ok) {
-        throw new Error('Purchase request failed');
+      // Immediately mark as purchased
+      const purchaseId = `${id}_${Date.now()}`;
+      const newPurchaseRef = ref(database, `users/${auth.currentUser.uid}/purchases/${purchaseId}`);
+
+      await set(newPurchaseRef, {
+        purchaseId,
+        itemId: id,
+        name: cardname,
+        description: cardpara,
+        ipfsHash: ipfsHash,
+        cost: cardcost,
+        timestamp: Date.now(),
+        imageUrl: cardpic
+      });
+
+      setSuccess('Purchase successful!');
+      if (onPurchaseSuccess) {
+        onPurchaseSuccess();
       }
 
-      const data = await response.json();
-      
-      if (data.success) {
-        // Create purchase record
-        const purchaseId = `${id}_${Date.now()}`;
-        const newPurchaseRef = ref(database, `users/${auth.currentUser.uid}/purchases/${purchaseId}`);
-        
-        await set(newPurchaseRef, {
-          purchaseId,
-          itemId: id,
-          name: cardname,
-          description: cardpara,
-          ipfsHash: ipfsHash,
-          cost: cardcost,
-          timestamp: Date.now(),
-          imageUrl: cardpic
-        });
-
-        setSuccess('Purchase successful!');
-      } else {
-        throw new Error(data.message || 'Purchase failed');
-      }
     } catch (error) {
       console.error('Purchase error:', error);
-      setError(error.message);
+      setError('Something went wrong. Try again.');
     } finally {
       setBuying(false);
     }
